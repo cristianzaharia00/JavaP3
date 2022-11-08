@@ -1,11 +1,31 @@
 package fruits;
 
-abstract public class Fruit {
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
+
+abstract public class Fruit implements Comparable<Fruit>{
     private double weight;
     private double water_content;
     private double sugar_content;
     private Color color;
 
+    @Override
+    public int compareTo(Fruit fruit) {
+        if (weight < fruit.weight)
+            return -1;
+        else if (weight > fruit.weight) {
+            return 1;
+        }
+        else {
+            if (sugar_content < fruit.getSugar_content())
+                return -1;
+            else if (sugar_content > fruit.getSugar_content())
+                return 1;
+            else return 0;
+        }
+    }
 
     public double getSugar_content() {
         return sugar_content;
@@ -39,7 +59,7 @@ abstract public class Fruit {
         this.color = color;
     }
 
-    public static double computeWeight(Fruit[] fruits) {
+    public static double computeWeight(ArrayList<Fruit> fruits) {
         double totalWeight = 0;
         for(Fruit f: fruits){
             totalWeight += f.getWeight();
@@ -47,7 +67,7 @@ abstract public class Fruit {
         return totalWeight;
     }
 
-    public static double computeSugarContent(Fruit[] fruits) {
+    public static double computeSugarContent(ArrayList<Fruit> fruits) {
         double totalSugarContent = 0;
         for(Fruit f: fruits){
             totalSugarContent += f.getSugar_content();
@@ -55,7 +75,7 @@ abstract public class Fruit {
         return totalSugarContent;
     }
 
-    public static void prepareFruit(Fruit[] fruits) {
+    public static void prepareFruit(ArrayList<Fruit> fruits) {
         for (Fruit f: fruits){
             if(f instanceof Peelable){
                 ((Peelable) f).peelOff();
@@ -65,6 +85,31 @@ abstract public class Fruit {
             }
         }
     }
+
+    public static Map<String,Integer> countFruit(ArrayList<Fruit> fruits){
+        HashMap<String,Integer> map = new HashMap<String,Integer>();
+        for (Fruit f : fruits)
+            if (f instanceof Banana) {
+                if (map.containsKey("Banana"))
+                    map.put("Banana", map.get("Banana") + 1);
+                else
+                    map.put("Banana", 1);
+            } else if (f instanceof Mango) {
+                if (map.containsKey("Mango"))
+                    map.put("Mango", map.get("Mango") + 1);
+                else
+                    map.put("Mango", 1);
+            }
+            else if (f instanceof Apple) {
+                if (map.containsKey("Apple"))
+                    map.put("Apple", map.get("Apple") + 1);
+                else
+                    map.put("Apple", 1);
+            }
+        return map;
+    }
+
+
 
     public enum Color {
         RED,

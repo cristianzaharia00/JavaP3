@@ -2,7 +2,10 @@ import fruits.Fruit;
 import fruits.Peelable;
 import fruits.SeedRemovable;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.stream.Collectors;
 
 public class Application {
     InputDevice inputDevice;
@@ -48,10 +51,12 @@ public class Application {
     }
 
     private void testFruitStuff() {
-        Fruit[] fruits = inputDevice.readFruit();
+        ArrayList<Fruit> fruits = new ArrayList<>();
+        fruits = inputDevice.readFruit();
 
         outputDevice.writeMessage(Fruit.computeSugarContent(fruits));
         outputDevice.writeMessage(Fruit.computeWeight(fruits));
+        outputDevice.writeMessage(Fruit.countFruit(fruits).toString());
         Fruit.prepareFruit(fruits);
 
         for (Fruit f: fruits){
@@ -63,6 +68,26 @@ public class Application {
             }
         }
     }
+    public void testFruitComparison(){
+        ArrayList<Fruit> fruits = new ArrayList<>();
+        fruits = inputDevice.readFruit();
+
+        Collections.sort(fruits);
+        System.out.println(fruits.toString());
+
+        System.out.println(Collections.min(fruits).toString());
+
+        System.out.println(Collections.max(fruits).toString());
+    }
+
+    public void testStreams(){
+        ArrayList<Fruit> fruits = new ArrayList<>();
+        fruits = inputDevice.readFruit();
+
+        System.out.println(fruits.stream().filter(p -> p.getSugar_content() < 20).collect(Collectors.toList()));
+        System.out.println(fruits.stream().mapToDouble(i -> i.getSugar_content()).sum());
+        System.out.println(fruits.stream().mapToDouble(i -> i.getSugar_content() / i.getWater_content()).average().getAsDouble());
+    }
 
     public void run(){
 
@@ -72,7 +97,7 @@ public class Application {
             this.randomArraySort();
         }
 
-        this.testFruitStuff();
+        this.testStreams();
 
 
 
