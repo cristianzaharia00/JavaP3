@@ -25,8 +25,11 @@ public class Game {
 
             System.out.print("Player " + i + " name: ");
             Scanner in = new Scanner(System.in);
+
+            //Choosing player's name
             String name = in.nextLine();
 
+            //Choosing player's colour
             int choice = 0;
             String colour = null;
 
@@ -49,6 +52,7 @@ public class Game {
 
 
 
+            //Choosing player's pawn
             String pawn_shape = null;
             choice = 0;
 
@@ -69,7 +73,7 @@ public class Game {
                     System.out.println("This shape is not available or non-existent");
                 }
             }
-            players[i] = new Players(name, colour, pawn_shape);
+            players[i] = new Players(name, colour, pawn_shape, i);
         }
 
         // TESTING THAT PLAYERS ARE ADDED CORRECTLY
@@ -81,6 +85,8 @@ public class Game {
         System.out.println();
         for (int round = 0; round < nor; round++) {
             for (int player = 0; player < nop; player++) {
+
+                //Position the player went on
                 int dice = board.throwDice();
                 players[player].board_position+=dice;
                 if (players[player].board_position>40) {
@@ -90,27 +96,53 @@ public class Game {
                 } else {
                     System.out.println(players[player].name + " moved to position " + players[player].board_position + " after rolling a " + dice);
                 }
+
+                //Squares Management
+                Square square = board.squares.get(players[player].board_position-1);
+                if (square.buyable) {
+                    if (square.bought) {
+                        if (players[player].cash >= square.price) {
+                            players[player].cash -= square.price;
+                            players[square.owner].cash += square.price;
+                            System.out.println(players[player].name + " is on " + players[square.owner].name + "'s property and has paid $" + square.price + " rent");
+                        } else {
+                            System.out.println(players[player].name + " is too poor to pay " + players[square.owner].name + "'s rent");
+                        }
+                    } else {
+                        if (players[player].cash >= square.price) {
+                            players[player].cash -= square.price;
+                            square.owner = player;
+                            System.out.println(players[player].name + " paid " + square.price + " and got the Property " + square.name);
+                            players[player].property_value += square.price;
+                        } else {
+                            System.out.println(players[player].name + " is too poor to buy the Property " + square.name);
+                        }
+                    }
+                }
+
+
+                System.out.println("\n");
             }
         }
 
         int winner = 0;
         for (int i=1; i<nop; i++) {
-            if (players[winner].cash < players[i].cash) {
+            int winnervalue = players[winner].cash+players[winner].property_value;
+            int checkvalue = players[i].cash+players[i].property_value;
+            if (winnervalue < checkvalue) {
                 winner = i;
-            } else if (players[winner].cash == players[i].cash) {
+            } else if (winnervalue == checkvalue) {
                 if (players[winner].board_position < players[i].board_position) {
                     winner = i;
                 }
             }
         }
 
-        int laps = players[winner].cash/200;
-        System.out.println("\n"+ players[winner].name + " has won the game with $" + players[winner].cash + " and on position " + players[winner].board_position + " after " + laps + " laps.");
+        System.out.println("\n"+ players[winner].name + " has won the game with $" + players[winner].cash + " cash and $" + players[winner].property_value + " as Property Value. Total value: $" + (players[winner].cash+players[winner].property_value));
         System.out.println("Other players results: ");
         for (int i=0; i<nop; i++) {
             if (i!=winner) {
-                laps = players[i].cash/200;
-                System.out.println(players[i].name + " has $" + players[i].cash + " and is on position " + players[i].board_position + " after " + laps + " laps.");
+                System.out.println(players[i].name + " has $" + players[i].cash + " cash and $" + players[winner].property_value + " as Property Value. Total: $" + (players[i].cash+players[i].property_value));
             }
         }
     }
